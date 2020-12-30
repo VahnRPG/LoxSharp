@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace LoxSharp {
 	public class LoxSharp {
+		private static readonly Interpreter interpreter = new Interpreter();
+
 		private static bool hadError = false;
+		private static bool hadRuntimeError = false;
 
 		public static void Main(string[] args) {
 			if (args.Length > 1) {
@@ -30,8 +33,13 @@ namespace LoxSharp {
 
 			string file_text = File.ReadAllText(path);
 			run(file_text);
+
+			//Indicate an error in the exit code
 			if (hadError) {
 				Environment.Exit(65);
+			}
+			if (hadRuntimeError) {
+				Environment.Exit(70);
 			}
 		}
 
@@ -39,12 +47,8 @@ namespace LoxSharp {
 			for (;;) {
 				Console.Write("> ");
 				string line = Console.ReadLine();
-				if (line == null) {
-					Console.WriteLine("Null passed!");
-					break;
-				}
-				else if (line.Trim().ToLower() == "exit") {
-					Console.WriteLine("Exit passed!");
+				if (line == null || line.Trim().ToLower() == "exit") {
+					Console.WriteLine("Goodbye!");
 					break;
 				}
 
@@ -63,7 +67,7 @@ namespace LoxSharp {
 				return;
 			}
 
-			Console.WriteLine(new AstPrinter().print(expression));
+			interpreter.interpret(expression);
 		}
 
 		public static void error(int line, string message) {
@@ -77,6 +81,11 @@ namespace LoxSharp {
 			else {
 				report(token.line, " at '" + token.lexeme + "'", message);
 			}
+		}
+
+		public static void runtimeError(RuntimeError error) {
+			Console.Error.WriteLine(error.Message + "\n[" + error.token.line + "]");
+			hadRuntimeError = true;
 		}
 
 		private static void report(int line, string where, string message) {
