@@ -5,6 +5,12 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoxSharp", "LoxSharp\LoxSharp.csproj", "{EF64C193-0E6D-4B35-938C-9332D58149A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateAst", "Tools\GenerateAst\GenerateAst.csproj", "{26410FC7-3EC0-4C5E-BFA7-72E84860EF85}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{4C2D137F-A2E7-4F58-90C5-754D65B94C84}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GenerateAst", "GenerateAst", "{38307BB6-9E4D-4444-B423-CF3873DEAA9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,8 +21,16 @@ Global
 		{EF64C193-0E6D-4B35-938C-9332D58149A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF64C193-0E6D-4B35-938C-9332D58149A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF64C193-0E6D-4B35-938C-9332D58149A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26410FC7-3EC0-4C5E-BFA7-72E84860EF85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26410FC7-3EC0-4C5E-BFA7-72E84860EF85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26410FC7-3EC0-4C5E-BFA7-72E84860EF85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26410FC7-3EC0-4C5E-BFA7-72E84860EF85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{26410FC7-3EC0-4C5E-BFA7-72E84860EF85} = {38307BB6-9E4D-4444-B423-CF3873DEAA9E}
+		{38307BB6-9E4D-4444-B423-CF3873DEAA9E} = {4C2D137F-A2E7-4F58-90C5-754D65B94C84}
 	EndGlobalSection
 EndGlobal
