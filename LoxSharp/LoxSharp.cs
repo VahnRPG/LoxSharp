@@ -43,6 +43,10 @@ namespace LoxSharp {
 					Console.WriteLine("Null passed!");
 					break;
 				}
+				else if (line.Trim().ToLower() == "exit") {
+					Console.WriteLine("Exit passed!");
+					break;
+				}
 
 				run(line);
 				hadError = false;
@@ -52,14 +56,27 @@ namespace LoxSharp {
 		private static void run(string script) {
 			Scanner scanner = new Scanner(script);
 			List<Token> tokens = scanner.scanTokens();
+			Parser parser = new Parser(tokens);
+			Expr expression = parser.parse();
 
-			foreach (var token in tokens) {
-				Console.WriteLine(token);
+			if (hadError) {
+				return;
 			}
+
+			Console.WriteLine(new AstPrinter().print(expression));
 		}
 
 		public static void error(int line, string message) {
 			report(line, "", message);
+		}
+
+		public static void error(Token token, string message) {
+			if (token.type == TokenType.EOF) {
+				report(token.line, " at end", message);
+			}
+			else {
+				report(token.line, " at '" + token.lexeme + "'", message);
+			}
 		}
 
 		private static void report(int line, string where, string message) {
