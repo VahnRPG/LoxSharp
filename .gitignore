@@ -1,0 +1,12 @@
+*/bin/
+*/obj/
+*/Content/bin/
+*/Content/obj/
+.vs/
+*.user
+resources/logs/
+resources/old/
+resources/images/old/
+resources/sounds/old/
+junk.txt
+find.php
