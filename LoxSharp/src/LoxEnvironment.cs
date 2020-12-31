@@ -32,7 +32,6 @@ namespace LoxSharp.src {
 		}
 
 		public void assignAt(int distance, Token name, object value) {
-			Console.WriteLine("Here2" + distance + " - " + name.lexeme + " - " + value);
 			ancestor(distance).values.Put(name.lexeme, value);
 		}
 

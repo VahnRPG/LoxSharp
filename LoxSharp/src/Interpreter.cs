@@ -350,10 +350,19 @@ namespace LoxSharp.src {
 
 		public object visitWhileStmt(Stmt.While stmt) {
 			while (isTruthy(evaluate(stmt.condition))) {
-				execute(stmt.body);
+				try {
+					execute(stmt.body);
+				}
+				catch (Break breakValue) {
+					break;
+				}
 			}
 
 			return null;
+		}
+
+		public object visitBreakStmt(Stmt.Break stmt) {
+			throw new Break();
 		}
 
 		public object visitReturnStmt(Stmt.Return stmt) {

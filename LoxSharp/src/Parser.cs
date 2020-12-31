@@ -93,6 +93,9 @@ namespace LoxSharp.src {
 			if (match(WHILE)) {
 				return whileStatement();
 			}
+			if (match(BREAK)) {
+				return breakStatement();
+			}
 			if (match(RETURN)) {
 				return returnStatement();
 			}
@@ -171,6 +174,13 @@ namespace LoxSharp.src {
 			Stmt body = statement();
 
 			return new Stmt.While(condition, body);
+		}
+
+		private Stmt breakStatement() {
+			Token keyword = previous();
+			consume(SEMICOLON, "Expect ';' after break");
+
+			return new Stmt.Break(keyword);
 		}
 
 		private Stmt returnStatement() {
@@ -495,6 +505,8 @@ namespace LoxSharp.src {
 					case IF:
 					case WHILE:
 					case PRINT:
+					case BREAK:
+					case CONTINUE:
 					case RETURN:
 						return;
 				}

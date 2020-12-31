@@ -13,6 +13,7 @@ namespace LoxSharp.src {
 			T visitIfStmt(If stmt);
 			T visitFunctionStmt(Function stmt);
 			T visitPrintStmt(Print stmt);
+			T visitBreakStmt(Break stmt);
 			T visitReturnStmt(Return stmt);
 			T visitVarStmt(Var stmt);
 			T visitWhileStmt(While stmt);
@@ -99,6 +100,18 @@ namespace LoxSharp.src {
 			
 			public override T accept<T>(Visitor<T> visitor) {
 				return visitor.visitPrintStmt(this);
+			}
+		}
+
+		public class Break : Stmt {
+			public readonly Token keyword;
+	
+			public Break(Token keyword) {
+				this.keyword = keyword;
+			}
+			
+			public override T accept<T>(Visitor<T> visitor) {
+				return visitor.visitBreakStmt(this);
 			}
 		}
 

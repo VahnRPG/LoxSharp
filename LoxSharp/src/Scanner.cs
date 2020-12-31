@@ -22,6 +22,8 @@ namespace LoxSharp.src {
 			{ "nil", NIL },
 			{ "or", OR },
 			{ "print", PRINT },
+			{ "break", BREAK },
+			{ "continue", CONTINUE },
 			{ "return", RETURN },
 			{ "super", SUPER },
 			{ "this", THIS },

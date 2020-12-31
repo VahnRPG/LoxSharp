@@ -25,7 +25,7 @@ namespace LoxSharp.src {
 
 		//Keywords
 		AND, CLASS, ELSE, FALSE, FUNCTION, FOR, IF, NIL, OR,
-		PRINT, RETURN, THIS, TRUE, VAR, WHILE,
+		PRINT, BREAK, CONTINUE, RETURN, THIS, TRUE, VAR, WHILE,
 
 		//Inheritence
 		COLON, SUPER,

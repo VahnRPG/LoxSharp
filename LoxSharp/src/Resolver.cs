@@ -130,6 +130,10 @@ namespace LoxSharp.src {
 			return null;
 		}
 
+		public object visitBreakStmt(Stmt.Break stmt) {
+			return null;
+		}
+
 		public object visitReturnStmt(Stmt.Return stmt) {
 			if (currentFunction == FunctionType.NONE) {
 				LoxSharp.error(stmt.keyword, "Can't return from top-level code");
@@ -164,7 +168,7 @@ namespace LoxSharp.src {
 		}
 
 		public object visitVariableExpr(Expr.Variable expr) {
-			if (scopes.Count > 0 && scopes.Peek()[expr.name.lexeme] == false) {
+			if (scopes.Count > 0 && scopes.Peek().Get(expr.name.lexeme) == false) {
 				LoxSharp.error(expr.name, "Can't read local variable in its own initializer");
 			}
 

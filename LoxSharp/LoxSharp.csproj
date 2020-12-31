@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\ast\Stmt.cs" />
+    <Compile Include="src\exceptions\Break.cs" />
     <Compile Include="src\exceptions\Return.cs" />
     <Compile Include="src\functions\Clock.cs" />
     <Compile Include="src\functions\LoxFunction.cs" />

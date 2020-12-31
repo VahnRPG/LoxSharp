@@ -28,6 +28,8 @@ define_ast($output_dir, "Stmt", array(
 	"If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
 	"Function   : Token name, List<Token> parameters, List<Stmt> body",
 	"Print      : Expr expression",
+	"Break      : Token keyword",
+	//"Continue   : Token keyword",
 	"Return     : Token keyword, Expr value",
 	"Var        : Token name, Expr initializer",
 	"While      : Expr condition, Stmt body",
