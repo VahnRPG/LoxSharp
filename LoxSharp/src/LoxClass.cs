@@ -7,17 +7,23 @@ using System.Threading.Tasks;
 namespace LoxSharp.src {
 	public class LoxClass : LoxCallable {
 		public readonly string name;
+		public readonly LoxClass superclass;
 
 		private readonly Dictionary<string, LoxFunction> methods;
 
-		public LoxClass(string name, Dictionary<string, LoxFunction> methods) {
+		public LoxClass(string name, LoxClass superclass, Dictionary<string, LoxFunction> methods) {
 			this.name = name;
+			this.superclass = superclass;
 			this.methods = methods;
 		}
 
 		public LoxFunction findMethod(string name) {
 			if (methods.ContainsKey(name)) {
 				return methods[name];
+			}
+
+			if (superclass != null) {
+				return superclass.findMethod(name);
 			}
 
 			return null;

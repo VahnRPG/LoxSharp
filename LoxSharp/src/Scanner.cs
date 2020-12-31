@@ -128,6 +128,9 @@ namespace LoxSharp.src {
 				case '"':
 					processString();
 					break;
+				case ':':
+					addToken(COLON);
+					break;
 				default:
 					if (isDigit(c)) {
 						processNumber();

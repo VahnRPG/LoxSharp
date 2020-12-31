@@ -32,10 +32,12 @@ namespace LoxSharp.src {
 
 		public class Class : Stmt {
 			public readonly Token name;
+			public readonly Expr.Variable superclass;
 			public readonly List<Stmt.Function> methods;
 	
-			public Class(Token name, List<Stmt.Function> methods) {
+			public Class(Token name, Expr.Variable superclass, List<Stmt.Function> methods) {
 				this.name = name;
+				this.superclass = superclass;
 				this.methods = methods;
 			}
 			

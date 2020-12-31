@@ -268,7 +268,20 @@ namespace LoxSharp.src {
 		}
 
 		public object visitClassStmt(Stmt.Class stmt) {
+			object superclass = null;
+			if (stmt.superclass != null) {
+				superclass = evaluate(stmt.superclass);
+				if (!(superclass is LoxClass)) {
+					throw new RuntimeError(stmt.superclass.name, "Superclass must be a class");
+				}
+			}
+
 			environment.define(stmt.name.lexeme, null);
+
+			if (stmt.superclass != null) {
+				environment = new LoxEnvironment(environment);
+				environment.define("super", superclass);
+			}
 
 			Dictionary<string, LoxFunction> methods = new Dictionary<string, LoxFunction>();
 			foreach (var method in stmt.methods) {
@@ -276,10 +289,28 @@ namespace LoxSharp.src {
 				methods.Put(method.name.lexeme, function);
 			}
 
-			LoxClass klass = new LoxClass(stmt.name.lexeme, methods);
+			LoxClass klass = new LoxClass(stmt.name.lexeme, (LoxClass) superclass, methods);
+
+			if (superclass != null) {
+				environment = environment.enclosing;
+			}
+
 			environment.assign(stmt.name, klass);
 
 			return null;
+		}
+
+		public object visitSuperExpr(Expr.Super expr) {
+			int? distance = locals.Get(expr);
+			LoxClass superclass = (LoxClass) environment.getAt((int) distance, "super");
+			LoxInstance obj = (LoxInstance) environment.getAt((int) distance - 1, "this");
+
+			LoxFunction method = superclass.findMethod(expr.method.lexeme);
+			if (method == null) {
+				throw new RuntimeError(expr.method, "Undefined property '" + expr.method.lexeme + "'");
+			}
+
+			return method.bind(obj);
 		}
 
 		public object visitExpressionStmt(Stmt.Expression stmt) {

@@ -15,6 +15,7 @@ define_ast($output_dir, "Expr", array(
 	"Literal  : object value",
 	"Logical  : Expr left, Token opr, Expr right",
 	"Set      : Expr obj, Token name, Expr value",
+	"Super    : Token keyword, Token method",
 	"This     : Token keyword",
 	"Unary    : Token opr, Expr right",
 	"Variable : Token name",
@@ -22,7 +23,7 @@ define_ast($output_dir, "Expr", array(
 
 define_ast($output_dir, "Stmt", array(
 	"Block      : List<Stmt> statements",
-	"Class      : Token name, List<Stmt.Function> methods",
+	"Class      : Token name, Expr.Variable superclass, List<Stmt.Function> methods",
 	"Expression : Expr expression",
 	"If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
 	"Function   : Token name, List<Token> parameters, List<Stmt> body",

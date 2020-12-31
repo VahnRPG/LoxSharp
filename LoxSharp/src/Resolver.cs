@@ -16,6 +16,7 @@ namespace LoxSharp.src {
 		private enum ClassType {
 			NONE,
 			CLASS,
+			SUBCLASS,
 		}
 
 		private readonly Interpreter interpreter;
@@ -49,6 +50,20 @@ namespace LoxSharp.src {
 			declare(stmt.name);
 			define(stmt.name);
 
+			if (stmt.superclass != null && stmt.name.lexeme.Equals(stmt.superclass.name.lexeme)) {
+				LoxSharp.error(stmt.superclass.name, "A class can't inherit from itself");
+			}
+
+			if (stmt.superclass != null) {
+				currentClass = ClassType.SUBCLASS;
+				resolve(stmt.superclass);
+			}
+
+			if (stmt.superclass != null) {
+				beginScope();
+				scopes.Peek().Put("super", true);
+			}
+
 			beginScope();
 			scopes.Peek().Put("this", true);
 
@@ -61,8 +76,25 @@ namespace LoxSharp.src {
 				resolveFunction(method, declaration);
 			}
 
+			if (stmt.superclass != null) {
+				endScope();
+			}
+
 			endScope();
 			currentClass = enclosingClass;
+
+			return null;
+		}
+
+		public object visitSuperExpr(Expr.Super expr) {
+			if (currentClass == ClassType.NONE) {
+				LoxSharp.error(expr.keyword, "Can't use 'super' outside of a class");
+			}
+			else if (currentClass != ClassType.SUBCLASS) {
+				LoxSharp.error(expr.keyword, "Can't use 'super' in a class with no superclass");
+			}
+
+			resolveLocal(expr, expr.keyword);
 
 			return null;
 		}

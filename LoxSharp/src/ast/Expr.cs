@@ -15,6 +15,7 @@ namespace LoxSharp.src {
 			T visitLiteralExpr(Literal expr);
 			T visitLogicalExpr(Logical expr);
 			T visitSetExpr(Set expr);
+			T visitSuperExpr(Super expr);
 			T visitThisExpr(This expr);
 			T visitUnaryExpr(Unary expr);
 			T visitVariableExpr(Variable expr);
@@ -133,6 +134,20 @@ namespace LoxSharp.src {
 			
 			public override T accept<T>(Visitor<T> visitor) {
 				return visitor.visitSetExpr(this);
+			}
+		}
+
+		public class Super : Expr {
+			public readonly Token keyword;
+			public readonly Token method;
+	
+			public Super(Token keyword, Token method) {
+				this.keyword = keyword;
+				this.method = method;
+			}
+			
+			public override T accept<T>(Visitor<T> visitor) {
+				return visitor.visitSuperExpr(this);
 			}
 		}
 
