@@ -9,8 +9,10 @@ namespace LoxSharp {
 		public interface Visitor<T> {
 			T visitBlockStmt(Block stmt);
 			T visitExpressionStmt(Expression stmt);
+			T visitIfStmt(If stmt);
 			T visitPrintStmt(Print stmt);
 			T visitVarStmt(Var stmt);
+			T visitWhileStmt(While stmt);
 		}
 
 		public class Block : Stmt {
@@ -37,6 +39,22 @@ namespace LoxSharp {
 			}
 		}
 
+		public class If : Stmt {
+			public readonly Expr condition;
+			public readonly Stmt thenBranch;
+			public readonly Stmt elseBranch;
+	
+			public If(Expr condition, Stmt thenBranch, Stmt elseBranch) {
+				this.condition = condition;
+				this.thenBranch = thenBranch;
+				this.elseBranch = elseBranch;
+			}
+			
+			public override T accept<T>(Visitor<T> visitor) {
+				return visitor.visitIfStmt(this);
+			}
+		}
+
 		public class Print : Stmt {
 			public readonly Expr expression;
 	
@@ -60,6 +78,20 @@ namespace LoxSharp {
 			
 			public override T accept<T>(Visitor<T> visitor) {
 				return visitor.visitVarStmt(this);
+			}
+		}
+
+		public class While : Stmt {
+			public readonly Expr condition;
+			public readonly Stmt body;
+	
+			public While(Expr condition, Stmt body) {
+				this.condition = condition;
+				this.body = body;
+			}
+			
+			public override T accept<T>(Visitor<T> visitor) {
+				return visitor.visitWhileStmt(this);
 			}
 		}
 

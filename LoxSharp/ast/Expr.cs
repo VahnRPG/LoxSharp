@@ -11,6 +11,7 @@ namespace LoxSharp {
 			T visitBinaryExpr(Binary expr);
 			T visitGroupingExpr(Grouping expr);
 			T visitLiteralExpr(Literal expr);
+			T visitLogicalExpr(Logical expr);
 			T visitUnaryExpr(Unary expr);
 			T visitVariableExpr(Variable expr);
 		}
@@ -66,6 +67,22 @@ namespace LoxSharp {
 			
 			public override T accept<T>(Visitor<T> visitor) {
 				return visitor.visitLiteralExpr(this);
+			}
+		}
+
+		public class Logical : Expr {
+			public readonly Expr left;
+			public readonly Token opr;
+			public readonly Expr right;
+	
+			public Logical(Expr left, Token opr, Expr right) {
+				this.left = left;
+				this.opr = opr;
+				this.right = right;
+			}
+			
+			public override T accept<T>(Visitor<T> visitor) {
+				return visitor.visitLogicalExpr(this);
 			}
 		}
 

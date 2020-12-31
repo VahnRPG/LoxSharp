@@ -11,6 +11,7 @@ define_ast($output_dir, "Expr", array(
 	"Binary   : Expr left, Token opr, Expr right",
 	"Grouping : Expr expression",
 	"Literal  : object value",
+	"Logical  : Expr left, Token opr, Expr right",
 	"Unary    : Token opr, Expr right",
 	"Variable : Token name",
 ));
@@ -18,8 +19,10 @@ define_ast($output_dir, "Expr", array(
 define_ast($output_dir, "Stmt", array(
 	"Block      : List<Stmt> statements",
 	"Expression : Expr expression",
+	"If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
 	"Print      : Expr expression",
 	"Var        : Token name, Expr initializer",
+	"While      : Expr condition, Stmt body",
 ));
 
 function define_ast(string $output_dir, string $base_name, array $types) {
