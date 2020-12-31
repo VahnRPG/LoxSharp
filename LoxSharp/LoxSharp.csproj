@@ -55,6 +55,7 @@
     <Compile Include="src\LoxSharp.cs" />
     <Compile Include="src\Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Resolver.cs" />
     <Compile Include="src\Scanner.cs" />
     <Compile Include="src\Token.cs" />
     <Compile Include="src\TokenType.cs" />

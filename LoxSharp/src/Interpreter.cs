@@ -9,6 +9,7 @@ using static LoxSharp.TokenType;
 namespace LoxSharp {
 	public class Interpreter : Expr.Visitor<object>, Stmt.Visitor<object> {
 		public readonly LoxEnvironment globals = new LoxEnvironment();
+		private readonly Dictionary<Expr, int> locals = new Dictionary<Expr, int>();
 
 		private LoxEnvironment environment;
 
@@ -31,7 +32,13 @@ namespace LoxSharp {
 
 		public object visitAssignExpr(Expr.Assign expr) {
 			object value = evaluate(expr.value);
-			environment.assign(expr.name, value);
+
+			if (locals.ContainsKey(expr)) {
+				environment.assignAt(locals[expr], expr.name, value);
+			}
+			else {
+				globals.assign(expr.name, value);
+			}
 
 			return value;
 		}
@@ -152,7 +159,15 @@ namespace LoxSharp {
 		}
 
 		public object visitVariableExpr(Expr.Variable expr) {
-			return environment.get(expr.name);
+			return lookUpVariable(expr.name, expr);
+		}
+
+		private object lookUpVariable(Token name, Expr expr) {
+			if (locals.ContainsKey(expr)) {
+				return environment.getAt(locals[expr], name.lexeme);
+			}
+
+			return globals.get(name);
 		}
 
 		private void checkNumberOperand(Token opr, object operand) {
@@ -213,6 +228,10 @@ namespace LoxSharp {
 
 		private void execute(Stmt stmt) {
 			stmt.accept(this);
+		}
+
+		public void resolve(Expr expr, int depth) {
+			locals.Add(expr, depth);
 		}
 
 		public object visitExpressionStmt(Stmt.Expression stmt) {

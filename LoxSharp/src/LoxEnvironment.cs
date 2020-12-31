@@ -15,12 +15,24 @@ namespace LoxSharp {
 		}
 
 		public void define(string name, object value) {
-			if (values.ContainsKey(name)) {
-				values[name] = value;
+			values.Put(name, value);
+		}
+
+		public LoxEnvironment ancestor(int distance) {
+			LoxEnvironment environment = this;
+			for (int i = 0; i < distance; i++) {
+				environment = environment.enclosing;
 			}
-			else {
-				values.Add(name, value);
-			}
+
+			return environment;
+		}
+
+		public object getAt(int distance, string name) {
+			return ancestor(distance).values[name];
+		}
+
+		public void assignAt(int distance, Token name, object value) {
+			ancestor(distance).values.Put(name.lexeme, value);
 		}
 
 		public void assign(Token name, object value) {
