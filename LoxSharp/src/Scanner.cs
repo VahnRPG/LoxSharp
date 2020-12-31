@@ -74,11 +74,9 @@ namespace LoxSharp.src {
 					addToken(DOT);
 					break;
 				case '-':
-					//addToken(MINUS);
 					addToken(match('-') ? MINUS_MINUS : MINUS);
 					break;
 				case '+':
-					//addToken(PLUS);
 					addToken(match('+') ? PLUS_PLUS : PLUS);
 					break;
 				case ';':
