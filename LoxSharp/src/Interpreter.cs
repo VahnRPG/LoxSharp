@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using static LoxSharp.TokenType;
+using static LoxSharp.src.TokenType;
 
-namespace LoxSharp {
+namespace LoxSharp.src {
 	public class Interpreter : Expr.Visitor<object>, Stmt.Visitor<object> {
 		public readonly LoxEnvironment globals = new LoxEnvironment();
-		private readonly Dictionary<Expr, int> locals = new Dictionary<Expr, int>();
+		private readonly Dictionary<Expr, int?> locals = new Dictionary<Expr, int?>();
 
 		private LoxEnvironment environment;
 
@@ -33,8 +33,9 @@ namespace LoxSharp {
 		public object visitAssignExpr(Expr.Assign expr) {
 			object value = evaluate(expr.value);
 
-			if (locals.ContainsKey(expr)) {
-				environment.assignAt(locals[expr], expr.name, value);
+			int? distance = locals.Get(expr);
+			if (distance != null) {
+				environment.assignAt((int) distance, expr.name, value);
 			}
 			else {
 				globals.assign(expr.name, value);
@@ -120,6 +121,31 @@ namespace LoxSharp {
 			return function.call(this, arguments);
 		}
 
+		public object visitGetExpr(Expr.Get expr) {
+			object obj = evaluate(expr.obj);
+			if (obj is LoxInstance) {
+				return ((LoxInstance) obj).get(expr.name);
+			}
+
+			throw new RuntimeError(expr.name, "Only instances have properties");
+		}
+
+		public object visitSetExpr(Expr.Set expr) {
+			object obj = evaluate(expr.obj);
+			if (!(obj is LoxInstance)) {
+				throw new RuntimeError(expr.name, "Only instances have fields");
+			}
+
+			object value = evaluate(expr.value);
+			((LoxInstance) obj).set(expr.name, value);
+
+			return value;
+		}
+
+		public object visitThisExpr(Expr.This expr) {
+			return lookUpVariable(expr.keyword, expr);
+		}
+
 		public object visitGroupingExpr(Expr.Grouping expr) {
 			return evaluate(expr.expression);
 		}
@@ -163,8 +189,9 @@ namespace LoxSharp {
 		}
 
 		private object lookUpVariable(Token name, Expr expr) {
-			if (locals.ContainsKey(expr)) {
-				return environment.getAt(locals[expr], name.lexeme);
+			int? distance = locals.Get(expr);
+			if (distance != null) {
+				return environment.getAt((int) distance, name.lexeme);
 			}
 
 			return globals.get(name);
@@ -234,6 +261,27 @@ namespace LoxSharp {
 			locals.Add(expr, depth);
 		}
 
+		public object visitBlockStmt(Stmt.Block stmt) {
+			executeBlock(stmt.statements, new LoxEnvironment(environment));
+
+			return null;
+		}
+
+		public object visitClassStmt(Stmt.Class stmt) {
+			environment.define(stmt.name.lexeme, null);
+
+			Dictionary<string, LoxFunction> methods = new Dictionary<string, LoxFunction>();
+			foreach (var method in stmt.methods) {
+				LoxFunction function = new LoxFunction(method, environment, method.name.lexeme.Equals("init"));
+				methods.Put(method.name.lexeme, function);
+			}
+
+			LoxClass klass = new LoxClass(stmt.name.lexeme, methods);
+			environment.assign(stmt.name, klass);
+
+			return null;
+		}
+
 		public object visitExpressionStmt(Stmt.Expression stmt) {
 			evaluate(stmt.expression);
 
@@ -241,7 +289,7 @@ namespace LoxSharp {
 		}
 
 		public object visitFunctionStmt(Stmt.Function stmt) {
-			LoxFunction function = new LoxFunction(stmt, environment);
+			LoxFunction function = new LoxFunction(stmt, environment, false);
 			environment.define(stmt.name.lexeme, function);
 
 			return null;
@@ -289,12 +337,6 @@ namespace LoxSharp {
 		public object visitPrintStmt(Stmt.Print stmt) {
 			object value = evaluate(stmt.expression);
 			Console.WriteLine(stringify(value));
-
-			return null;
-		}
-
-		public object visitBlockStmt(Stmt.Block stmt) {
-			executeBlock(stmt.statements, new LoxEnvironment(environment));
 
 			return null;
 		}

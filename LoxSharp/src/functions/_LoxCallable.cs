@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoxSharp {
+namespace LoxSharp.src {
 	interface LoxCallable {
 		int arity();
 		object call(Interpreter interpreter, List<object> arguments);

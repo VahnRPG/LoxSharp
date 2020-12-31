@@ -4,17 +4,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoxSharp {
+namespace LoxSharp.src {
 	public class Resolver : Expr.Visitor<object>, Stmt.Visitor<object> {
 		private enum FunctionType {
 			NONE,
 			FUNCTION,
+			INITIALIZER,
+			METHOD,
+		}
+
+		private enum ClassType {
+			NONE,
+			CLASS,
 		}
 
 		private readonly Interpreter interpreter;
-		private readonly Stack<Dictionary<string, bool>> scopes = new Stack<Dictionary<string, bool>>();
+		private readonly StackList<Dictionary<string, bool?>> scopes = new StackList<Dictionary<string, bool?>>();
 
 		private FunctionType currentFunction = FunctionType.NONE;
+		private ClassType currentClass = ClassType.NONE;
 
 		public Resolver(Interpreter interpreter) {
 			this.interpreter = interpreter;
@@ -30,6 +38,31 @@ namespace LoxSharp {
 			beginScope();
 			resolve(stmt.statements);
 			endScope();
+
+			return null;
+		}
+
+		public object visitClassStmt(Stmt.Class stmt) {
+			ClassType enclosingClass = currentClass;
+			currentClass = ClassType.CLASS;
+
+			declare(stmt.name);
+			define(stmt.name);
+
+			beginScope();
+			scopes.Peek().Put("this", true);
+
+			foreach (var method in stmt.methods) {
+				FunctionType declaration = FunctionType.METHOD;
+				if (method.name.lexeme.Equals("init")) {
+					declaration = FunctionType.INITIALIZER;
+				}
+
+				resolveFunction(method, declaration);
+			}
+
+			endScope();
+			currentClass = enclosingClass;
 
 			return null;
 		}
@@ -71,6 +104,10 @@ namespace LoxSharp {
 			}
 
 			if (stmt.value != null) {
+				if (currentFunction == FunctionType.INITIALIZER) {
+					LoxSharp.error(stmt.keyword, "Can't return a value from an initializer");
+				}
+
 				resolve(stmt.value);
 			}
 
@@ -128,6 +165,31 @@ namespace LoxSharp {
 			return null;
 		}
 
+		public object visitGetExpr(Expr.Get expr) {
+			resolve(expr.obj);
+
+			return null;
+		}
+
+		public object visitSetExpr(Expr.Set expr) {
+			resolve(expr.value);
+			resolve(expr.obj);
+
+			return null;
+		}
+
+		public object visitThisExpr(Expr.This expr) {
+			if (currentClass == ClassType.NONE) {
+				LoxSharp.error(expr.keyword, "Can't use 'this' outside of a class");
+
+				return null;
+			}
+
+			resolveLocal(expr, expr.keyword);
+
+			return null;
+		}
+
 		public object visitGroupingExpr(Expr.Grouping expr) {
 			resolve(expr.expression);
 
@@ -177,7 +239,7 @@ namespace LoxSharp {
 		}
 
 		private void beginScope() {
-			scopes.Push(new Dictionary<string, bool>());
+			scopes.Push(new Dictionary<string, bool?>());
 		}
 
 		private void endScope() {
@@ -189,7 +251,7 @@ namespace LoxSharp {
 				return;
 			}
 
-			Dictionary<string, bool> scope = scopes.Peek();
+			Dictionary<string, bool?> scope = scopes.Peek();
 			if (scope.ContainsKey(name.lexeme)) {
 				LoxSharp.error(name, "Variable with this name already exists in this scope");
 			}
@@ -206,9 +268,8 @@ namespace LoxSharp {
 		}
 
 		private void resolveLocal(Expr expr, Token name) {
-			List<Dictionary<string, bool>> resolve_scope = scopes.ToList();
-			for (int i = resolve_scope.Count - 1; i >= 0; i--) {
-				if (resolve_scope[i].ContainsKey(name.lexeme)) {
+			for (int i = scopes.Count - 1; i >= 0; i--) {
+				if (scopes[i].ContainsKey(name.lexeme)) {
 					interpreter.resolve(expr, scopes.Count - 1 - i);
 
 					return;

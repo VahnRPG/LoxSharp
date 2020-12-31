@@ -4,15 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoxSharp {
+namespace LoxSharp.src {
 	abstract public class Expr {
 		public interface Visitor<T> {
 			T visitAssignExpr(Assign expr);
 			T visitBinaryExpr(Binary expr);
 			T visitCallExpr(Call expr);
+			T visitGetExpr(Get expr);
 			T visitGroupingExpr(Grouping expr);
 			T visitLiteralExpr(Literal expr);
 			T visitLogicalExpr(Logical expr);
+			T visitSetExpr(Set expr);
+			T visitThisExpr(This expr);
 			T visitUnaryExpr(Unary expr);
 			T visitVariableExpr(Variable expr);
 		}
@@ -63,6 +66,20 @@ namespace LoxSharp {
 			}
 		}
 
+		public class Get : Expr {
+			public readonly Expr obj;
+			public readonly Token name;
+	
+			public Get(Expr obj, Token name) {
+				this.obj = obj;
+				this.name = name;
+			}
+			
+			public override T accept<T>(Visitor<T> visitor) {
+				return visitor.visitGetExpr(this);
+			}
+		}
+
 		public class Grouping : Expr {
 			public readonly Expr expression;
 	
@@ -100,6 +117,34 @@ namespace LoxSharp {
 			
 			public override T accept<T>(Visitor<T> visitor) {
 				return visitor.visitLogicalExpr(this);
+			}
+		}
+
+		public class Set : Expr {
+			public readonly Expr obj;
+			public readonly Token name;
+			public readonly Expr value;
+	
+			public Set(Expr obj, Token name, Expr value) {
+				this.obj = obj;
+				this.name = name;
+				this.value = value;
+			}
+			
+			public override T accept<T>(Visitor<T> visitor) {
+				return visitor.visitSetExpr(this);
+			}
+		}
+
+		public class This : Expr {
+			public readonly Token keyword;
+	
+			public This(Token keyword) {
+				this.keyword = keyword;
+			}
+			
+			public override T accept<T>(Visitor<T> visitor) {
+				return visitor.visitThisExpr(this);
 			}
 		}
 

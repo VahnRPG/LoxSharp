@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using static LoxSharp.TokenType;
+using static LoxSharp.src.TokenType;
 
-namespace LoxSharp {
+namespace LoxSharp.src {
 	public class Scanner {
 		private readonly string source;
 		private readonly char[] source_chars;

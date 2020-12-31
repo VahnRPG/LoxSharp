@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using static LoxSharp.TokenType;
+using static LoxSharp.src.TokenType;
 
-namespace LoxSharp {
+namespace LoxSharp.src {
 	public class Parser {
 		private class ParseError : SystemException {
 		}
@@ -30,6 +30,9 @@ namespace LoxSharp {
 
 		private Stmt declaration() {
 			try {
+				if (match(CLASS)) {
+					return classDeclaration();
+				}
 				if (match(FUNCTION)) {
 					return function("function");
 				}
@@ -44,6 +47,20 @@ namespace LoxSharp {
 
 				return null;
 			}
+		}
+
+		private Stmt classDeclaration() {
+			Token name = consume(IDENTIFIER, "Expect class name");
+			consume(LEFT_BRACE, "Expect '{' before class body");
+
+			List<Stmt.Function> methods = new List<Stmt.Function>();
+			while (!check(RIGHT_BRACE) && !isAtEnd()) {
+				methods.Add(function("method"));
+			}
+
+			consume(RIGHT_BRACE, "Expect '}' after class body");
+
+			return new Stmt.Class(name, methods);
 		}
 
 		private Stmt varDeclaration() {
@@ -220,6 +237,11 @@ namespace LoxSharp {
 
 					return new Expr.Assign(name, value);
 				}
+				else if (expr is Expr.Get) {
+					Expr.Get get = (Expr.Get) expr;
+
+					return new Expr.Set(get.obj, get.name, value);
+				}
 
 				error(equals, "Invalid assignment target");
 			}
@@ -320,6 +342,10 @@ namespace LoxSharp {
 				if (match(LEFT_PAREN)) {
 					expr = finishCall(expr);
 				}
+				else if (match(DOT)) {
+					Token name = consume(IDENTIFIER, "Expect property name after '.'");
+					expr = new Expr.Get(expr, name);
+				}
 				else {
 					break;
 				}
@@ -357,6 +383,10 @@ namespace LoxSharp {
 
 			if (match(NUMBER, STRING)) {
 				return new Expr.Literal(previous().literal);
+			}
+
+			if (match(THIS)) {
+				return new Expr.This(previous());
 			}
 
 			if (match(IDENTIFIER)) {

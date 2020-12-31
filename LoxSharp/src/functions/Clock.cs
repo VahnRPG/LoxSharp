@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoxSharp {
+namespace LoxSharp.src {
 	public class Clock : LoxCallable {
 		public int arity() {
 			return 0;

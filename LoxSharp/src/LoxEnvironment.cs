@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoxSharp {
+namespace LoxSharp.src {
 	public class LoxEnvironment {
 		public readonly LoxEnvironment enclosing;
 
@@ -28,16 +28,17 @@ namespace LoxSharp {
 		}
 
 		public object getAt(int distance, string name) {
-			return ancestor(distance).values[name];
+			return ancestor(distance).values.Get(name);
 		}
 
 		public void assignAt(int distance, Token name, object value) {
+			Console.WriteLine("Here2" + distance + " - " + name.lexeme + " - " + value);
 			ancestor(distance).values.Put(name.lexeme, value);
 		}
 
 		public void assign(Token name, object value) {
 			if (values.ContainsKey(name.lexeme)) {
-				values[name.lexeme] = value;
+				values.Put(name.lexeme, value);
 
 				return;
 			}

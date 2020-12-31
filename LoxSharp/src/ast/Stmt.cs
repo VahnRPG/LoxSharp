@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoxSharp {
+namespace LoxSharp.src {
 	abstract public class Stmt {
 		public interface Visitor<T> {
 			T visitBlockStmt(Block stmt);
+			T visitClassStmt(Class stmt);
 			T visitExpressionStmt(Expression stmt);
 			T visitIfStmt(If stmt);
 			T visitFunctionStmt(Function stmt);
@@ -26,6 +27,20 @@ namespace LoxSharp {
 			
 			public override T accept<T>(Visitor<T> visitor) {
 				return visitor.visitBlockStmt(this);
+			}
+		}
+
+		public class Class : Stmt {
+			public readonly Token name;
+			public readonly List<Stmt.Function> methods;
+	
+			public Class(Token name, List<Stmt.Function> methods) {
+				this.name = name;
+				this.methods = methods;
+			}
+			
+			public override T accept<T>(Visitor<T> visitor) {
+				return visitor.visitClassStmt(this);
 			}
 		}
 

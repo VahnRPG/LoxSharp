@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoxSharp {
+namespace LoxSharp.src {
 	public class LoxSharp {
 		private static readonly Interpreter interpreter = new Interpreter();
 
