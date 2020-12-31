@@ -7,15 +7,25 @@ using System.Threading.Tasks;
 using static LoxSharp.TokenType;
 
 namespace LoxSharp {
-	public class Interpreter : Expr.Visitor<object> {
-		public void interpret(Expr expression) {
+	public class Interpreter : Expr.Visitor<object>, Stmt.Visitor<object> {
+		private LoxEnvironment environment = new LoxEnvironment();
+
+		public void interpret(List<Stmt> statements) {
 			try {
-				object value = evaluate(expression);
-				Console.WriteLine(stringify(value));
+				foreach (var statement in statements) {
+					execute(statement);
+				}
 			}
 			catch (RuntimeError error) {
 				LoxSharp.runtimeError(error);
 			}
+		}
+
+		public object visitAssignExpr(Expr.Assign expr) {
+			object value = evaluate(expr.value);
+			environment.assign(expr.name, value);
+
+			return value;
 		}
 
 		public object visitBinaryExpr(Expr.Binary expr) {
@@ -96,6 +106,10 @@ namespace LoxSharp {
 			return null;
 		}
 
+		public object visitVariableExpr(Expr.Variable expr) {
+			return environment.get(expr.name);
+		}
+
 		private void checkNumberOperand(Token opr, object operand) {
 			if (operand is double) {
 				return;
@@ -150,6 +164,55 @@ namespace LoxSharp {
 
 		private object evaluate(Expr expr) {
 			return expr.accept(this);
+		}
+
+		private void execute(Stmt stmt) {
+			stmt.accept(this);
+		}
+
+		public object visitExpressionStmt(Stmt.Expression stmt) {
+			evaluate(stmt.expression);
+
+			return null;
+		}
+
+		public object visitPrintStmt(Stmt.Print stmt) {
+			object value = evaluate(stmt.expression);
+			Console.WriteLine(stringify(value));
+
+			return null;
+		}
+
+		public object visitVarStmt(Stmt.Var stmt) {
+			object value = null;
+			if (stmt.initializer != null) {
+				value = evaluate(stmt.initializer);
+			}
+
+			environment.define(stmt.name.lexeme, value);
+
+			return null;
+		}
+
+		public object visitBlockStmt(Stmt.Block stmt) {
+			executeBlock(stmt.statements, new LoxEnvironment(environment));
+
+			return null;
+		}
+
+		public void executeBlock(List<Stmt> statements, LoxEnvironment environment) {
+			LoxEnvironment previous = this.environment;
+
+			try {
+				this.environment = environment;
+
+				foreach (var statement in statements) {
+					execute(statement);
+				}
+			}
+			finally {
+				this.environment = previous;
+			}
 		}
 	}
 }

@@ -1,6 +1,0 @@
-C:\Programming\CSharp\Projects\LoxSharp\Tools\GenerateAst\bin\Debug\GenerateAst.exe.config
-C:\Programming\CSharp\Projects\LoxSharp\Tools\GenerateAst\bin\Debug\GenerateAst.exe
-C:\Programming\CSharp\Projects\LoxSharp\Tools\GenerateAst\bin\Debug\GenerateAst.pdb
-C:\Programming\CSharp\Projects\LoxSharp\Tools\GenerateAst\obj\Debug\GenerateAst.csprojResolveAssemblyReference.cache
-C:\Programming\CSharp\Projects\LoxSharp\Tools\GenerateAst\obj\Debug\GenerateAst.exe
-C:\Programming\CSharp\Projects\LoxSharp\Tools\GenerateAst\obj\Debug\GenerateAst.pdb
