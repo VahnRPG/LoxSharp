@@ -10,7 +10,9 @@ namespace LoxSharp {
 			T visitBlockStmt(Block stmt);
 			T visitExpressionStmt(Expression stmt);
 			T visitIfStmt(If stmt);
+			T visitFunctionStmt(Function stmt);
 			T visitPrintStmt(Print stmt);
+			T visitReturnStmt(Return stmt);
 			T visitVarStmt(Var stmt);
 			T visitWhileStmt(While stmt);
 		}
@@ -55,6 +57,22 @@ namespace LoxSharp {
 			}
 		}
 
+		public class Function : Stmt {
+			public readonly Token name;
+			public readonly List<Token> parameters;
+			public readonly List<Stmt> body;
+	
+			public Function(Token name, List<Token> parameters, List<Stmt> body) {
+				this.name = name;
+				this.parameters = parameters;
+				this.body = body;
+			}
+			
+			public override T accept<T>(Visitor<T> visitor) {
+				return visitor.visitFunctionStmt(this);
+			}
+		}
+
 		public class Print : Stmt {
 			public readonly Expr expression;
 	
@@ -64,6 +82,20 @@ namespace LoxSharp {
 			
 			public override T accept<T>(Visitor<T> visitor) {
 				return visitor.visitPrintStmt(this);
+			}
+		}
+
+		public class Return : Stmt {
+			public readonly Token keyword;
+			public readonly Expr value;
+	
+			public Return(Token keyword, Expr value) {
+				this.keyword = keyword;
+				this.value = value;
+			}
+			
+			public override T accept<T>(Visitor<T> visitor) {
+				return visitor.visitReturnStmt(this);
 			}
 		}
 

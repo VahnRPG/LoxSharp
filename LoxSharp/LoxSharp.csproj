@@ -43,17 +43,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ast\Stmt.cs" />
-    <Compile Include="LoxEnvironment.cs" />
-    <Compile Include="errors\RuntimeError.cs" />
-    <Compile Include="ast\Expr.cs" />
-    <Compile Include="Interpreter.cs" />
-    <Compile Include="LoxSharp.cs" />
-    <Compile Include="Parser.cs" />
+    <Compile Include="src\ast\Stmt.cs" />
+    <Compile Include="src\exceptions\Return.cs" />
+    <Compile Include="src\functions\Clock.cs" />
+    <Compile Include="src\functions\LoxFunction.cs" />
+    <Compile Include="src\functions\_LoxCallable.cs" />
+    <Compile Include="src\LoxEnvironment.cs" />
+    <Compile Include="src\exceptions\RuntimeError.cs" />
+    <Compile Include="src\ast\Expr.cs" />
+    <Compile Include="src\Interpreter.cs" />
+    <Compile Include="src\LoxSharp.cs" />
+    <Compile Include="src\Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scanner.cs" />
-    <Compile Include="Token.cs" />
-    <Compile Include="TokenType.cs" />
+    <Compile Include="src\Scanner.cs" />
+    <Compile Include="src\Token.cs" />
+    <Compile Include="src\TokenType.cs" />
+    <Compile Include="src\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

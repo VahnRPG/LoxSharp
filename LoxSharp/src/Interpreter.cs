@@ -8,7 +8,15 @@ using static LoxSharp.TokenType;
 
 namespace LoxSharp {
 	public class Interpreter : Expr.Visitor<object>, Stmt.Visitor<object> {
-		private LoxEnvironment environment = new LoxEnvironment();
+		public readonly LoxEnvironment globals = new LoxEnvironment();
+
+		private LoxEnvironment environment;
+
+		public Interpreter() {
+			this.environment = globals;
+
+			globals.define("clock", new Clock());
+		}
 
 		public void interpret(List<Stmt> statements) {
 			try {
@@ -83,6 +91,26 @@ namespace LoxSharp {
 			}
 
 			return null;
+		}
+
+		public object visitCallExpr(Expr.Call expr) {
+			object callee = evaluate(expr.callee);
+
+			List<object> arguments = new List<object>();
+			foreach (var argument in expr.arguments) {
+				arguments.Add(evaluate(argument));
+			}
+
+			if (!(callee is LoxCallable)) {
+				throw new RuntimeError(expr.paren, "Can only call functions and classes");
+			}
+
+			LoxCallable function = (LoxCallable) callee;
+			if (arguments.Count != function.arity()) {
+				throw new RuntimeError(expr.paren, "Expected " + function.arity() + " arguments but got " + arguments.Count);
+			}
+
+			return function.call(this, arguments);
 		}
 
 		public object visitGroupingExpr(Expr.Grouping expr) {
@@ -193,6 +221,13 @@ namespace LoxSharp {
 			return null;
 		}
 
+		public object visitFunctionStmt(Stmt.Function stmt) {
+			LoxFunction function = new LoxFunction(stmt, environment);
+			environment.define(stmt.name.lexeme, function);
+
+			return null;
+		}
+
 		public object visitIfStmt(Stmt.If stmt) {
 			if (isTruthy(evaluate(stmt.condition))) {
 				execute(stmt.thenBranch);
@@ -200,13 +235,6 @@ namespace LoxSharp {
 			else if (stmt.elseBranch != null) {
 				execute(stmt.elseBranch);
 			}
-
-			return null;
-		}
-
-		public object visitPrintStmt(Stmt.Print stmt) {
-			object value = evaluate(stmt.expression);
-			Console.WriteLine(stringify(value));
 
 			return null;
 		}
@@ -226,6 +254,22 @@ namespace LoxSharp {
 			while (isTruthy(evaluate(stmt.condition))) {
 				execute(stmt.body);
 			}
+
+			return null;
+		}
+
+		public object visitReturnStmt(Stmt.Return stmt) {
+			object value = null;
+			if (stmt.value != null) {
+				value = evaluate(stmt.value);
+			}
+
+			throw new Return(value);
+		}
+
+		public object visitPrintStmt(Stmt.Print stmt) {
+			object value = evaluate(stmt.expression);
+			Console.WriteLine(stringify(value));
 
 			return null;
 		}

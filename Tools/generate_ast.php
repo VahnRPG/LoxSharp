@@ -9,6 +9,7 @@ $output_dir = $argv[1];
 define_ast($output_dir, "Expr", array(
 	"Assign   : Token name, Expr value",
 	"Binary   : Expr left, Token opr, Expr right",
+	"Call     : Expr callee, Token paren, List<Expr> arguments",
 	"Grouping : Expr expression",
 	"Literal  : object value",
 	"Logical  : Expr left, Token opr, Expr right",
@@ -20,7 +21,9 @@ define_ast($output_dir, "Stmt", array(
 	"Block      : List<Stmt> statements",
 	"Expression : Expr expression",
 	"If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
+	"Function   : Token name, List<Token> parameters, List<Stmt> body",
 	"Print      : Expr expression",
+	"Return     : Token keyword, Expr value",
 	"Var        : Token name, Expr initializer",
 	"While      : Expr condition, Stmt body",
 ));

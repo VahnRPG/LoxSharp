@@ -9,6 +9,7 @@ namespace LoxSharp {
 		public interface Visitor<T> {
 			T visitAssignExpr(Assign expr);
 			T visitBinaryExpr(Binary expr);
+			T visitCallExpr(Call expr);
 			T visitGroupingExpr(Grouping expr);
 			T visitLiteralExpr(Literal expr);
 			T visitLogicalExpr(Logical expr);
@@ -43,6 +44,22 @@ namespace LoxSharp {
 			
 			public override T accept<T>(Visitor<T> visitor) {
 				return visitor.visitBinaryExpr(this);
+			}
+		}
+
+		public class Call : Expr {
+			public readonly Expr callee;
+			public readonly Token paren;
+			public readonly List<Expr> arguments;
+	
+			public Call(Expr callee, Token paren, List<Expr> arguments) {
+				this.callee = callee;
+				this.paren = paren;
+				this.arguments = arguments;
+			}
+			
+			public override T accept<T>(Visitor<T> visitor) {
+				return visitor.visitCallExpr(this);
 			}
 		}
 

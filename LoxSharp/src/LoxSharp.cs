@@ -21,7 +21,8 @@ namespace LoxSharp {
 				runFile(args[0]);
 			}
 			else {
-				runPrompt();
+				runFile("test.lox");
+				//runPrompt();
 			}
 		}
 
